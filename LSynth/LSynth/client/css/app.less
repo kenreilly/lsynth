@@ -1,0 +1,126 @@
+﻿body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: black;
+    color: #07c410;
+    margin: 0;
+    padding: 20px 40px;
+
+    h1 {font-weight: 300; }
+
+    canvas {
+        border: 1px dashed  darken(#07c410, 22%);
+        border-radius: 12px;
+        margin-left: 20px;
+        float: left;
+    }
+
+    button {
+        font-family: monospace;
+        text-transform: lowercase;
+        height: 32px;
+        width: 64px;
+        background: darken(#808080, 20%);
+        color: white;
+        border-width: 1px;
+
+        &.selected {
+            background: darken(#808080, 30%);
+            color: #ffd800;
+        }
+    }
+
+    input[type='range'] {
+       float: left;
+        margin-left: 20px;
+       -webkit-appearance: none;
+       height: 28px;
+       background-color: transparent;
+       border: none;
+       box-shadow: none;
+
+       &::-webkit-slider-runnable-track {
+            width: 129px;
+            height: 1px;
+            border: 1px solid #6381f5;
+            //border-radius: 3px;
+       }
+
+       &::-webkit-slider-thumb {
+           -webkit-appearance: none;
+            border: none;
+            height: 28px;
+            width: 8px;
+            border: 1px solid #ffd800;
+            margin-top: -14px;
+       }
+    }
+
+    button.slider-x {
+        background: transparent;
+        border: none;
+        display: inline-block;
+        width: 120px;
+        text-align: left;
+        //background: #808080;
+        border-bottom: 1px solid #6381f5;
+        //box-shadow: 10px 10px 1px #5a38b0;
+          font-family: monospace;
+          &:focus {
+              outline: none;
+          }
+        .fader {
+
+        }
+    }
+
+    button.slider-y {
+
+        .fader {
+
+        }
+    }
+
+    #synth1 {
+        float: left;
+        width: 800px;
+        height: 160px;
+        padding: 20px;
+        box-shadow:  inset 1px 2px 12px darken(rgb(255, 0, 0), 20%);
+
+        .control-row {
+            height: 32px;
+            clear: both;
+            margin-bottom: 8px;
+        }
+
+        input[type='text'], button {
+            float: left;
+            margin-left: 8px;
+        }
+
+        button.slider-x {
+            margin-left: 24px;
+        }
+
+        input[type='text'] {
+            height: 28px;
+            font-family: monospace;
+            font-size: 22px;
+            margin-right: 20px;
+            font-style: italic;
+            font-stretch: ultra-expanded;
+            background: transparent;
+            box-shadow: 2px 2px 12px darken(rgb(255, 0, 0), 22%);
+            color: darken(rgb(255, 0, 0), 12%);
+            border: 1px solid darken(rgb(255, 0, 0), 40%);
+            outline: none;
+            width: 100px;
+            text-align: right;
+            text-shadow: -2px 4px 2px darken(red, 30%);
+            padding-right: 20px;
+            &:focus {
+                outline: 1px solid darken(red, 34%);
+            }
+        }
+    }
+}

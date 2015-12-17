@@ -1,0 +1,10 @@
+{
+  "name": "LSynth",
+  "version": "0.0.0",
+  "description": "LSynth",
+  "main": "app.js",
+  "author": {
+    "name": "Kenneth",
+    "email": ""
+  }
+}
