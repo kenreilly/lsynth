@@ -4,29 +4,10 @@ var Controller = (function () {
     Controller.audioContext = new window['AudioContext'];
     return Controller;
 })();
-var Scope = (function () {
-    function Scope(canvas) {
-        this.offset = 0;
-        this.zoom = 1.0;
-        this.cut = 0;
-        this.analyzer = Controller.audioContext.createAnalyser();
-        this.analyzer.fftSize = 1024;
-        this.analyzer.smoothingTimeConstant = 0.2;
-        this.canvas = canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = "rgb(0,200,100)";
-        this.ctx.fillStyle = 'rgb(0, 0, 0)';
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
+var Wave = (function () {
+    function Wave() {
     }
-    Scope.prototype.refresh = function () {
-        var data = new Uint8Array(this.analyzer.fftSize);
-        this.analyzer.getByteTimeDomainData(data);
-        this.render(this.extractWaveform(data));
-        requestAnimationFrame(this.refresh.bind(this));
-    };
-    Scope.prototype.extractWaveform = function (data) {
+    Wave.getWaveform = function (data) {
         for (var phase = 0, offset = 0, x = 0, xx = data.length; x != xx; ++x) {
             if (data[x] > 127) {
                 switch (phase) {
@@ -48,7 +29,31 @@ var Scope = (function () {
         }
         return new Uint8Array(0);
     };
-    Scope.prototype.render = function (data) {
+    return Wave;
+})();
+var OScope = (function () {
+    function OScope(canvas) {
+        this.offset = 0;
+        this.zoom = 1.0;
+        this.cut = 0;
+        this.analyzer = Controller.audioContext.createAnalyser();
+        this.analyzer.fftSize = 1024;
+        this.analyzer.smoothingTimeConstant = 0.2;
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "rgb(0,200,100)";
+        this.ctx.fillStyle = 'rgb(0, 0, 0)';
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+    }
+    OScope.prototype.run = function () {
+        var data = new Uint8Array(this.analyzer.fftSize);
+        this.analyzer.getByteTimeDomainData(data);
+        this.render(Wave.getWaveform(data));
+        requestAnimationFrame(this.run.bind(this));
+    };
+    OScope.prototype.render = function (data) {
         if (!data.length) {
             return; // no data
         }
@@ -82,7 +87,7 @@ var Scope = (function () {
         this.ctx.lineTo(this.width, this.height / 2);
         this.ctx.stroke();
     };
-    return Scope;
+    return OScope;
 })();
 var OSC = (function () {
     function OSC() {
@@ -117,11 +122,11 @@ var FunctionGenerator = (function () {
         this.gain2.connect(this.sum);
         this.initInputs(this.osc1, this.gain1, document.querySelector('.osc1'));
         this.initInputs(this.osc2, this.gain2, document.querySelector('.osc2'));
-        this.scope = new Scope(document.querySelector('canvas'));
+        this.scope = new OScope(document.querySelector('canvas'));
         this.sum.connect(this.scope.analyzer);
         this.osc1.start();
         this.osc2.start();
-        this.scope.refresh();
+        this.scope.run();
     }
     FunctionGenerator.prototype.initInputs = function (osc, amp, parent) {
         var f = parent.querySelector("input[type='text']");
@@ -152,6 +157,11 @@ var FunctionGenerator = (function () {
         }
     };
     return FunctionGenerator;
+})();
+var Sequencer = (function () {
+    function Sequencer(element) {
+    }
+    return Sequencer;
 })();
 var fgen = new FunctionGenerator();
 //# sourceMappingURL=app.js.map

@@ -122,16 +122,17 @@ namespace LSynth {
 
             try {
                 // Retrieve app content
-                var content = File.read("/client/html/lsynth.html").split("<content />");
-                App.content = {
-                    header: content[0],
-                    footer: content[1]
-                }
+                var content = File.read("/client/html/lsynth.html"); //.split("<content />");
+
+                //App.content = {
+                //    header: content[0],
+                //    footer: content[1]
+                //}
 
                 for (var i in App.routes) {
                     try {
                         var route = App.routes[i];
-                        route.content = File.read(route.target);
+                        route.content = content; //File.read(route.target);
                     }
                     catch (e) { console.log(e); }
                 }
@@ -143,7 +144,8 @@ namespace LSynth {
 
         public static render(view: Route): string {
 
-            return App.content.header + view.content + App.content.footer;
+            return view.content;
+           // return App.content.header + view.content + App.content.footer;
         }
     }
 

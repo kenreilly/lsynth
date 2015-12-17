@@ -5,12 +5,13 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
     <Name>LSynth</Name>
     <RootNamespace>LSynth</RootNamespace>
+    <NameOfLastUsedPublishProfile>lsynth</NameOfLastUsedPublishProfile>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>404325a7-f02a-4d04-8b44-b425136da947</ProjectGuid>
+    <ProjectGuid>ea92df33-2d0f-4463-a64c-68cb38b8c214</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>server.ts</StartupFile>
     <StartWebBrowser>True</StartWebBrowser>
@@ -37,23 +38,13 @@
     <TypeScriptCompile Include="client\js\app.ts" />
     <TypeScriptCompile Include="Scripts\typings\node\node.d.ts" />
     <TypeScriptCompile Include="server.ts" />
-    <Content Include="client\css\app.css">
-      <SubType>Content</SubType>
-      <DependentUpon>client\css\app.less</DependentUpon>
-    </Content>
+    <None Include="lsynth.pubxml" />
+    <Content Include="client\css\app.css" />
     <Content Include="client\css\app.less" />
-    <Content Include="client\css\app.min.css">
-      <SubType>Content</SubType>
-      <DependentUpon>client\css\app.css</DependentUpon>
-    </Content>
+    <Content Include="client\css\app.min.css" />
     <Content Include="client\html\home.html" />
     <Content Include="client\html\lsynth.html" />
     <Content Include="client\js\app.js.map" />
-    <None Include="compilerconfig.json" />
-    <Content Include="compilerconfig.json.defaults">
-      <SubType>Content</SubType>
-      <DependentUpon>compilerconfig.json</DependentUpon>
-    </Content>
     <Content Include="package.json" />
     <Content Include="README.md" />
     <Content Include="server.js.map" />
@@ -67,8 +58,8 @@
   <ItemGroup>
     <Folder Include="bin\" />
     <Folder Include="client\" />
-    <Folder Include="client\html\" />
     <Folder Include="client\css\" />
+    <Folder Include="client\html\" />
     <Folder Include="client\js\" />
     <Folder Include="Scripts\" />
     <Folder Include="Scripts\typings\" />

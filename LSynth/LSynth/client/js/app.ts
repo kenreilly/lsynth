@@ -3,47 +3,9 @@
     public static audioContext: AudioContext = new window['AudioContext'];
 }
 
-class Scope {
+class Wave {
 
-    public analyzer: AnalyserNode;
-
-    private canvas: HTMLCanvasElement;
-
-    private ctx: CanvasRenderingContext2D;
-
-    private width: number;
-    private height: number;
-
-    public offset: number = 0;
-    public zoom: number = 1.0;
-    public cut: number = 0;
-
-    constructor(canvas: HTMLCanvasElement) {
-
-        this.analyzer = Controller.audioContext.createAnalyser();
-        this.analyzer.fftSize = 1024;
-        this.analyzer.smoothingTimeConstant = 0.2;
-
-        this.canvas = canvas;
-        this.ctx = this.canvas.getContext('2d');
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeStyle = "rgb(0,200,100)";
-        this.ctx.fillStyle = 'rgb(0, 0, 0)';
-
-        this.width = this.canvas.width;
-        this.height = this.canvas.height;
-    }
-
-    public refresh() {
-
-        var data = new Uint8Array(this.analyzer.fftSize);
-        this.analyzer.getByteTimeDomainData(data);
-        this.render(this.extractWaveform(data));
-
-        requestAnimationFrame(this.refresh.bind(this));
-    }
-
-    public extractWaveform(data: Uint8Array) {
+    public static getWaveform(data: Uint8Array): Uint8Array {
 
         for (var phase = 0, offset = 0, x = 0, xx = data.length; x != xx; ++x) {
 
@@ -73,6 +35,45 @@ class Scope {
 
         return new Uint8Array(0);
     }
+}
+
+class OScope {
+
+    public analyzer: AnalyserNode;
+    private canvas: HTMLCanvasElement;
+    private ctx: CanvasRenderingContext2D;
+
+    private width: number;
+    private height: number;
+
+    public offset: number = 0;
+    public zoom: number = 1.0;
+    public cut: number = 0;
+
+    constructor(canvas: HTMLCanvasElement) {
+
+        this.analyzer = Controller.audioContext.createAnalyser();
+        this.analyzer.fftSize = 1024;
+        this.analyzer.smoothingTimeConstant = 0.2;
+
+        this.canvas = canvas;
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "rgb(0,200,100)";
+        this.ctx.fillStyle = 'rgb(0, 0, 0)';
+
+        this.width = this.canvas.width;
+        this.height = this.canvas.height;
+    }
+
+    public run() {
+
+        var data = new Uint8Array(this.analyzer.fftSize);
+        this.analyzer.getByteTimeDomainData(data);
+        this.render(Wave.getWaveform(data));
+
+        requestAnimationFrame(this.run.bind(this));
+    }
 
     public render(data: Uint8Array) {
 
@@ -88,8 +89,7 @@ class Scope {
         this.ctx.lineTo(this.width, this.height / 2);
         this.ctx.setLineDash([4, 24]);
         this.ctx.stroke();
-
-
+        
         this.ctx.beginPath();
         var sz = (this.zoom * this.canvas.width) / data.length,
             i = 0,
@@ -158,7 +158,7 @@ class FunctionGenerator {
     public gain1: GainNode;
     public gain2: GainNode;
 
-    public scope: Scope;
+    public scope: OScope;
 
     public sum: GainNode;
 
@@ -215,14 +215,23 @@ class FunctionGenerator {
         this.initInputs(this.osc1, this.gain1, <HTMLElement>document.querySelector('.osc1'));
         this.initInputs(this.osc2, this.gain2, <HTMLElement>document.querySelector('.osc2'));
 
-        this.scope = new Scope(<HTMLCanvasElement>document.querySelector('canvas'));
+        this.scope = new OScope(<HTMLCanvasElement>document.querySelector('canvas'));
         this.sum.connect(this.scope.analyzer);
 
         this.osc1.start();
         this.osc2.start();
 
-        this.scope.refresh();
+        this.scope.run();
     }
+}
+
+class Sequencer {
+
+    private timer: number;
+
+    constructor(element: HTMLElement) {
+
+    }    
 }
 
 var fgen = new FunctionGenerator();
