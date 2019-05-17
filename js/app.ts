@@ -1,6 +1,6 @@
 ﻿class Controller {
 
-    public static audioContext: AudioContext = new window['AudioContext'];
+    public static audioContext: AudioContext 
 }
 
 class Wave {
@@ -122,20 +122,21 @@ class OScope {
     }
 }
 
+enum WaveForm  {
+    Sine = 'sine',
+    Square = 'square'
+}
+
 class OSC {
 
     public oscillator: OscillatorNode;
 
-    static WaveForm = {
-        Sine: 'sine',
-        Square: 'square'
-    }
 
     constructor() {
 
         this.oscillator = Controller.audioContext.createOscillator();
 
-        this.oscillator.type = OSC.WaveForm.Sine;
+        this.oscillator.type = WaveForm.Sine;
         this.oscillator.frequency.value = 440; // value in hertz
     }
 
@@ -183,7 +184,7 @@ class FunctionGenerator {
 
             (<HTMLButtonElement>buttons[i]).onclick = function (e) {
                 var button: HTMLButtonElement = <HTMLButtonElement>e.target;
-                osc.oscillator.type = button.name;
+                osc.oscillator.type = <OscillatorType>button.name;
 
                 for (var j = 0, jj = buttons.length; j != jj; ++j) {
                     (<HTMLButtonElement>buttons[j]).classList.remove('selected');
@@ -194,7 +195,11 @@ class FunctionGenerator {
         }
     }
 
-    constructor() {
+    private init() {
+
+        Controller.audioContext = window.hasOwnProperty('webkitAudioContext') 
+            ? new (<any>window).webkitAudioContext() 
+            : new AudioContext()
 
         this.osc1 = new OSC();
         this.osc2 = new OSC();
@@ -222,6 +227,12 @@ class FunctionGenerator {
         this.osc2.start();
 
         this.scope.run();
+    }
+
+    constructor() {
+
+        let start_button = <HTMLButtonElement>document.querySelector("button[name='start']")
+        start_button.onclick = () => { this.init() }
     }
 }
 

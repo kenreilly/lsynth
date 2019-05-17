@@ -1,26 +1,25 @@
-var Controller = (function () {
+var Controller = /** @class */ (function () {
     function Controller() {
     }
-    Controller.audioContext = new window['AudioContext'];
     return Controller;
-})();
-var Wave = (function () {
+}());
+var Wave = /** @class */ (function () {
     function Wave() {
     }
     Wave.getWaveform = function (data) {
         for (var phase = 0, offset = 0, x = 0, xx = data.length; x != xx; ++x) {
-            if (data[x] > 127) {
-                switch (phase) {
+            if (data[x] > 127) { // 8-bit unsigned, 127 = 0dB
+                switch (phase) { // positive phase
                     case 0:
                         offset = x; // set waveform start
                         phase += 180; // shift 180 degrees
                         continue;
-                    case 360:
+                    case 360: // return captured waveform
                         return data.slice(offset - 1, x);
                 }
             }
             else {
-                switch (phase) {
+                switch (phase) { // negative phase
                     case 180:
                         phase += 180; // shift 180 degrees
                         continue;
@@ -30,8 +29,8 @@ var Wave = (function () {
         return new Uint8Array(0);
     };
     return Wave;
-})();
-var OScope = (function () {
+}());
+var OScope = /** @class */ (function () {
     function OScope(canvas) {
         this.offset = 0;
         this.zoom = 1.0;
@@ -88,11 +87,16 @@ var OScope = (function () {
         this.ctx.stroke();
     };
     return OScope;
-})();
-var OSC = (function () {
+}());
+var WaveForm;
+(function (WaveForm) {
+    WaveForm["Sine"] = "sine";
+    WaveForm["Square"] = "square";
+})(WaveForm || (WaveForm = {}));
+var OSC = /** @class */ (function () {
     function OSC() {
         this.oscillator = Controller.audioContext.createOscillator();
-        this.oscillator.type = OSC.WaveForm.Sine;
+        this.oscillator.type = WaveForm.Sine;
         this.oscillator.frequency.value = 440; // value in hertz
     }
     OSC.prototype.connect = function (destination) {
@@ -101,32 +105,13 @@ var OSC = (function () {
     OSC.prototype.start = function () {
         this.oscillator.start();
     };
-    OSC.WaveForm = {
-        Sine: 'sine',
-        Square: 'square'
-    };
     return OSC;
-})();
-var FunctionGenerator = (function () {
+}());
+var FunctionGenerator = /** @class */ (function () {
     function FunctionGenerator() {
-        this.osc1 = new OSC();
-        this.osc2 = new OSC();
-        this.gain1 = Controller.audioContext.createGain();
-        this.gain2 = Controller.audioContext.createGain();
-        this.gain1.gain.value = 0.5;
-        this.gain2.gain.value = 0.5;
-        this.osc1.connect(this.gain1);
-        this.osc2.connect(this.gain2);
-        this.sum = Controller.audioContext.createGain();
-        this.gain1.connect(this.sum);
-        this.gain2.connect(this.sum);
-        this.initInputs(this.osc1, this.gain1, document.querySelector('.osc1'));
-        this.initInputs(this.osc2, this.gain2, document.querySelector('.osc2'));
-        this.scope = new OScope(document.querySelector('canvas'));
-        this.sum.connect(this.scope.analyzer);
-        this.osc1.start();
-        this.osc2.start();
-        this.scope.run();
+        var _this = this;
+        var start_button = document.querySelector("button[name='start']");
+        start_button.onclick = function () { _this.init(); };
     }
     FunctionGenerator.prototype.initInputs = function (osc, amp, parent) {
         var f = parent.querySelector("input[type='text']");
@@ -156,12 +141,34 @@ var FunctionGenerator = (function () {
             };
         }
     };
+    FunctionGenerator.prototype.init = function () {
+        Controller.audioContext = window.hasOwnProperty('webkitAudioContext')
+            ? new window.webkitAudioContext()
+            : new AudioContext();
+        this.osc1 = new OSC();
+        this.osc2 = new OSC();
+        this.gain1 = Controller.audioContext.createGain();
+        this.gain2 = Controller.audioContext.createGain();
+        this.gain1.gain.value = 0.5;
+        this.gain2.gain.value = 0.5;
+        this.osc1.connect(this.gain1);
+        this.osc2.connect(this.gain2);
+        this.sum = Controller.audioContext.createGain();
+        this.gain1.connect(this.sum);
+        this.gain2.connect(this.sum);
+        this.initInputs(this.osc1, this.gain1, document.querySelector('.osc1'));
+        this.initInputs(this.osc2, this.gain2, document.querySelector('.osc2'));
+        this.scope = new OScope(document.querySelector('canvas'));
+        this.sum.connect(this.scope.analyzer);
+        this.osc1.start();
+        this.osc2.start();
+        this.scope.run();
+    };
     return FunctionGenerator;
-})();
-var Sequencer = (function () {
+}());
+var Sequencer = /** @class */ (function () {
     function Sequencer(element) {
     }
     return Sequencer;
-})();
+}());
 var fgen = new FunctionGenerator();
-//# sourceMappingURL=app.js.map
